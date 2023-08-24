@@ -3,7 +3,7 @@ package com.Vanguard.TradeReportEngine.Services;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 
-import com.Vanguard.TradeReportEngine.entities.TradeReportEngine;
+import com.Vanguard.TradeReportEngine.Model.TradeReportEngine;
 
 public interface TradeReportEngineService {
 	

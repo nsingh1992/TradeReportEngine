@@ -9,9 +9,10 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
+import com.Vanguard.TradeReportEngine.Constants.Constant;
 import com.Vanguard.TradeReportEngine.Exception.ResourceNotFoundException;
 import com.Vanguard.TradeReportEngine.Services.TradeReportEngineService;
-import com.Vanguard.TradeReportEngine.entities.TradeReportEngine;
+import com.Vanguard.TradeReportEngine.Model.TradeReportEngine;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
@@ -44,19 +45,27 @@ public class TradeReportEngineController {
 	 
 	 @Value("${listOfPremiumCurrency}")
 	 private String[] listOfPremiumCurrency;
-	
-	List<TradeReportEngine> xmlDataList = new ArrayList<>();
+	 
+	 @Value("${buyerPartyReferenceExpression}")
+	 private String buyerPartyReferenceExpression;
+	 
+	 @Value("${sellerPartyReferenceExpression}")
+	 private String sellerPartyReferenceExpression;
+	 
+	 @Value("${paymentAmountCurrencyExpression}")
+	 private String paymentAmountCurrencyExpression;
+	 
+	 @Value("${paymentAmountExpression}")
+	 private String paymentAmountExpression;
 
 	@PostMapping("/upload")
 	public ResponseEntity<CopyOnWriteArrayList<TradeReportEngine>> uploadFiles(@RequestParam("files") MultipartFile[] files) {
+		List<TradeReportEngine> xmlDataList = new ArrayList<>();
 		for (MultipartFile file : files) {
 			xmlDataList.add(fetchDataFromXml(file));
 		}
 		tradeReportEngineService.addXmlDetailsInDb(xmlDataList);
-		xmlDataList.clear();
-		CopyOnWriteArrayList<TradeReportEngine> dbDetails = tradeReportEngineService.fetchDetailsFromDb(listOfSellerParty,listOfPremiumCurrency);
-		
-		
+		CopyOnWriteArrayList<TradeReportEngine> dbDetails = tradeReportEngineService.fetchDetailsFromDb(listOfSellerParty,listOfPremiumCurrency);		
 		if(dbDetails == null)
 			throw new ResourceNotFoundException("The given data not found in db");
 		
@@ -64,12 +73,6 @@ public class TradeReportEngineController {
 	}
 
 	private TradeReportEngine fetchDataFromXml(MultipartFile inputFile) {
-
-		String buyerPartyReferenceExpression = "/requestConfirmation/trade/varianceOptionTransactionSupplement/buyerPartyReference";
-		String sellerPartyReferenceExpression = "/requestConfirmation/trade/varianceOptionTransactionSupplement/sellerPartyReference";
-		String paymentAmountCurrencyExpression = "/requestConfirmation/trade/varianceOptionTransactionSupplement/equityPremium/paymentAmount/currency";
-		String paymentAmountExpression = "/requestConfirmation/trade/varianceOptionTransactionSupplement/equityPremium/paymentAmount/amount";
-
 		List<String> xmlListForExpression = new ArrayList<String>();
 		TradeReportEngine tradeReportEngineObject = new TradeReportEngine();
 		tradeReportEngineObject.setFileName(inputFile.getOriginalFilename());
@@ -96,20 +99,16 @@ public class TradeReportEngineController {
 
 				for (int i = 0; i < nodeList.getLength(); i++) {
 					Node nNode = nodeList.item(i);
-					System.out.println("\nCurrent Element :" + nNode.getNodeName());
-					
 
 					if (nNode.getNodeType() == Node.ELEMENT_NODE) {
 						Element eElement = (Element) nNode;
-						System.out.println("href :" + eElement.getAttribute("href"));
-						System.out.println("\n tagName:" + eElement.getTextContent());
-						if (xmlItem.contains("buyerPartyReference")) {
-							tradeReportEngineObject.setBuyer_party(eElement.getAttribute("href"));
-						}else if (xmlItem.contains("sellerPartyReference")) {
-							tradeReportEngineObject.setSeller_party(eElement.getAttribute("href"));
-						}else if (xmlItem.contains("currency")) {
+						if (xmlItem.contains(Constant.BUYER_PARTY_REFERENCE)) {
+							tradeReportEngineObject.setBuyer_party(eElement.getAttribute(Constant.HREF));
+						}else if (xmlItem.contains(Constant.SELLER_PARTY_REFERENCE)) {
+							tradeReportEngineObject.setSeller_party(eElement.getAttribute(Constant.HREF));
+						}else if (xmlItem.contains(Constant.CURRENCY)) {
 							tradeReportEngineObject.setPremium_currency(eElement.getTextContent());
-						}else if (xmlItem.contains("amount")) {
+						}else if (xmlItem.contains(Constant.AMOUNT)) {
 							tradeReportEngineObject.setPremium_amount(Double.parseDouble(eElement.getTextContent()));
 						}
 					}

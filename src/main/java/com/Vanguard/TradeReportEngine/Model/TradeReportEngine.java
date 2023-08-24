@@ -1,4 +1,4 @@
-package com.Vanguard.TradeReportEngine.entities;
+package com.Vanguard.TradeReportEngine.Model;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;

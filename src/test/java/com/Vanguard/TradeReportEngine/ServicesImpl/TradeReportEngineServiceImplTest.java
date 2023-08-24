@@ -15,8 +15,8 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import com.Vanguard.TradeReportEngine.TradeReportEngineRepo;
-import com.Vanguard.TradeReportEngine.entities.TradeReportEngine;
+import com.Vanguard.TradeReportEngine.Repo.TradeReportEngineRepo;
+import com.Vanguard.TradeReportEngine.Model.TradeReportEngine;
 
 
 @ExtendWith(MockitoExtension.class)
