@@ -1,4 +1,4 @@
-package com.example.TradeReportEngine;
+package com.Vanguard.TradeReportEngine;
 
 import org.springframework.boot.test.context.SpringBootTest;
 @SpringBootTest
